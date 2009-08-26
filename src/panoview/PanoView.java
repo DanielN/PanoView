@@ -46,7 +46,8 @@ public class PanoView {
 		textureProjection = new EquirectangularTextureProjection();
 		//lens = new RectilinearLens();
 		lens = new FisheyeLens();
-		parts = 4;
+		parts = Runtime.getRuntime().availableProcessors();
+		System.out.println("Using " + parts + " thread(s)");
 		reconfigure(w, h);
 		execService = Executors.newFixedThreadPool(parts);
 	}
