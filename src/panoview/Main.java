@@ -1,5 +1,6 @@
 package panoview;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics2D;
@@ -49,6 +50,7 @@ public class Main implements MouseMotionListener {
 		});
 		canvas = new RenderCanvas(new Dimension(width, height));
 		canvas.addMouseMotionListener(this);
+		canvas.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		frame.add(canvas);
 		frame.pack();
 		frame.setLocationByPlatform(true);
