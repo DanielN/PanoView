@@ -1,6 +1,7 @@
 package panoview;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -9,7 +10,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import panoview.texture.Texture;
-import panoview.util.RenderFrame;
+import panoview.util.RenderCanvas;
 
 
 public class Main implements MouseMotionListener {
@@ -28,7 +29,8 @@ public class Main implements MouseMotionListener {
 		}
 	}
 
-	private RenderFrame frame;
+	private Frame frame;
+	private RenderCanvas canvas;
 	private PanoView panoView;
 	private long frameTime = 30000000L;
 	private int mouseX;
@@ -38,15 +40,19 @@ public class Main implements MouseMotionListener {
 	private double zoom = 1.0;
 
 	public Main(int width, int height, String filename) throws IOException {
-		frame = new RenderFrame("PanoView", new Dimension(width, height));
+		frame = new Frame("PanoView");
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
-		frame.addMouseMotionListener(this);
-		panoView = new PanoView(width, height, frame.getGraphicsConfiguration(), new Texture(filename));
+		canvas = new RenderCanvas(new Dimension(width, height));
+		canvas.addMouseMotionListener(this);
+		frame.add(canvas);
+		frame.pack();
+		frame.setLocationByPlatform(true);
+		panoView = new PanoView(width, height, canvas.getGraphicsConfiguration(), new Texture(filename));
 	}
 	
 	public void run() {
@@ -62,12 +68,12 @@ public class Main implements MouseMotionListener {
 				panoView.setDir(dir);
 				panoView.setTilt(tilt);
 				panoView.setFocalLength(zoom);
-				int w = frame.getWidth();
-				int h = frame.getHeight();
+				int w = canvas.getWidth();
+				int h = canvas.getHeight();
 				panoView.reconfigure(w, h);
-				Graphics2D g = frame.startRender();
+				Graphics2D g = canvas.startRender();
 				panoView.render(g);
-				frame.stopRender(g);
+				canvas.stopRender(g);
 				t += frameTime;
 			}
 		} catch (InterruptedException e) {

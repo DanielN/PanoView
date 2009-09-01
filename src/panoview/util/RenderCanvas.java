@@ -1,26 +1,24 @@
 package panoview.util;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics2D;
 
 /**
- * RenderFrame is a {@link Frame} subclass that simplifies synchronous rendering.
+ * RenderCanvas is a Canvas subclass that simplifies synchronous rendering.
  */
 @SuppressWarnings("serial")
-public class RenderFrame extends Frame {
+public class RenderCanvas extends Canvas {
 
 	/**
-	 * Create a new RenderFrame with the given size.
+	 * Create a new RenderConvas with the given size.
 	 * @param size the initial width and height of the window.
 	 */
-	public RenderFrame(String title, Dimension size) {
-		super(title);
-		setSize(size);
+	public RenderCanvas(Dimension size) {
+		setPreferredSize(size);
 		setIgnoreRepaint(true);
 		setBackground(Color.black);
-		setLocationByPlatform(true);
 	}
 	
 	/**
