@@ -1,4 +1,4 @@
-package panoview;
+package panoview.util;
 
 
 public class FixMath {

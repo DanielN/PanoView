@@ -1,4 +1,4 @@
-package panoview;
+package panoview.texture;
 
 public interface TextureProjection {
 

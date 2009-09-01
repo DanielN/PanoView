@@ -1,4 +1,6 @@
-package panoview;
+package panoview.texture;
+
+import panoview.util.FixMath;
 
 public class EquirectangularTextureProjection implements TextureProjection {
 

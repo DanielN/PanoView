@@ -1,4 +1,8 @@
-package panoview;
+package panoview.lens;
+
+import panoview.texture.Texture;
+import panoview.texture.TextureProjection;
+import panoview.util.FixMath;
 
 public class FisheyeLens implements Lens {
 

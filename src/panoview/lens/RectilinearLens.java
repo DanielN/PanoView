@@ -1,4 +1,7 @@
-package panoview;
+package panoview.lens;
+
+import panoview.texture.Texture;
+import panoview.texture.TextureProjection;
 
 public class RectilinearLens implements Lens {
 

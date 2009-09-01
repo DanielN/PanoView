@@ -5,6 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import panoview.texture.Texture;
+import panoview.util.RenderFrame;
+
 
 public class Test {
 

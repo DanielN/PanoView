@@ -1,4 +1,4 @@
-package panoview;
+package panoview.texture;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import panoview.util.FixMath;
 
 
 public class Texture {
@@ -19,7 +21,7 @@ public class Texture {
 	 */
 	public Texture() {
 		try {
-			BufferedImage image = ImageIO.read(getClass().getResourceAsStream("panorama.jpg"));
+			BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/panoview/panorama.jpg"));
 			DataBufferByte buffer = (DataBufferByte) image.getData().getDataBuffer();
 			data = buffer.getData();
 			width = image.getWidth();

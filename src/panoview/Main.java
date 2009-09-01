@@ -8,6 +8,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import panoview.texture.Texture;
+import panoview.util.RenderFrame;
+
 
 public class Main implements MouseMotionListener {
 
