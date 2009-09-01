@@ -158,7 +158,7 @@ public class PanoView {
 			long end = System.nanoTime();
 			System.out.println("Time " + (end - start) / 1000000L);
 		}
-		gr.drawImage(img, 0, 0, width-1, height-1, 0, 0, width-1, height-1, null);
+		gr.drawImage(img, 0, 0, null);
 		changed = false;
 	}
 
