@@ -1,5 +1,6 @@
 package panoview;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -32,6 +33,7 @@ public class Main implements MouseMotionListener {
 
 	private Frame frame;
 	private RenderCanvas canvas;
+	private PanoToolBar toolbar;
 	private PanoView panoView;
 	private long frameTime = 30000000L;
 	private int mouseX;
@@ -39,6 +41,7 @@ public class Main implements MouseMotionListener {
 	private double dir;
 	private double tilt;
 	private double zoom = 1.0;
+	private boolean changed;
 
 	public Main(int width, int height, String filename) throws IOException {
 		frame = new Frame("PanoView");
@@ -51,10 +54,12 @@ public class Main implements MouseMotionListener {
 		canvas = new RenderCanvas(new Dimension(width, height));
 		canvas.addMouseMotionListener(this);
 		canvas.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-		frame.add(canvas);
+		frame.add(canvas, BorderLayout.CENTER);
+		panoView = new PanoView(width, height, canvas.getGraphicsConfiguration(), new Texture(filename));
+		toolbar = new PanoToolBar(panoView);
+		frame.add(toolbar, BorderLayout.SOUTH);
 		frame.pack();
 		frame.setLocationByPlatform(true);
-		panoView = new PanoView(width, height, canvas.getGraphicsConfiguration(), new Texture(filename));
 	}
 	
 	public void run() {
@@ -67,14 +72,14 @@ public class Main implements MouseMotionListener {
 					Thread.sleep(delta / 1000000, (int) (delta % 1000000));
 					delta = System.nanoTime() - t;
 				}
-				panoView.setDir(dir);
-				panoView.setTilt(tilt);
-				panoView.setFocalLength(zoom);
+				boolean force = changed;
+				changed = false;
+				panoView.getLens().setup(dir, tilt, zoom);
 				int w = canvas.getWidth();
 				int h = canvas.getHeight();
 				panoView.reconfigure(w, h);
 				Graphics2D g = canvas.startRender();
-				panoView.render(g);
+				panoView.render(g, force);
 				canvas.stopRender(g);
 				t += frameTime;
 			}
@@ -92,11 +97,13 @@ public class Main implements MouseMotionListener {
 		if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 			dir += dx / zoom / 200.0;
 			tilt -= dy / zoom / 200.0;
+			changed = true;
 		} else if ((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
 			zoom += dy / 100.0;
 			if (zoom < 0.1) {
 				zoom = 0.1;
 			}
+			changed = true;
 		}
 	}
 

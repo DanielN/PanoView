@@ -15,8 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import panoview.lens.FisheyeLens;
 import panoview.lens.Lens;
+import panoview.lens.RectilinearLens;
 import panoview.texture.EquirectangularTextureProjection;
 import panoview.texture.Texture;
 import panoview.texture.TextureProjection;
@@ -34,9 +34,6 @@ public class PanoView {
 	private Lens lens;
 	private int parts;
 	private ExecutorService execService;
-	private double dir;
-	private double tilt;
-	private double focalLength = 1.0;
 	private boolean changed;
 
 	/**
@@ -50,12 +47,20 @@ public class PanoView {
 		this.gc = gc;
 		this.texture = texture;
 		textureProjection = new EquirectangularTextureProjection();
-		//lens = new RectilinearLens();
-		lens = new FisheyeLens();
+		lens = new RectilinearLens();
 		parts = Runtime.getRuntime().availableProcessors();
 		System.out.println("Using " + parts + " thread(s)");
 		reconfigure(w, h);
 		execService = Executors.newFixedThreadPool(parts);
+	}
+	
+	public Lens getLens() {
+		return lens;
+	}
+	
+	public void setLens(Lens lens) {
+		this.lens = lens;
+		changed = true;
 	}
 	
 	public Texture getTexture() {
@@ -84,38 +89,15 @@ public class PanoView {
 		}
 	}
 	
-	public void setDir(double dir) {
-		if (this.dir != dir) {
-			this.dir = dir;
-			changed = true;
-		}
-	}
-	
-	public void setTilt(double tilt) {
-		if (this.tilt != tilt) {
-			this.tilt = tilt;
-			changed = true;
-		}
-	}
-	
-	public void setFocalLength(double focalLength) {
-		if (this.focalLength != focalLength) {
-			this.focalLength = focalLength;
-			changed = true;
-		}
-	}
-
 	/**
 	 * Render the current frame to an AWT surface.
 	 * @param gr the Graphics object to use when rendering.
 	 */
-	public void render(Graphics gr) {
-		if (changed) {
+	public void render(Graphics gr, boolean force) {
+		if (changed || force) {
 			long start = System.nanoTime();
 			// TODO short data vs. int data
 			final int[] data = ((DataBufferInt) dataBuffer).getData();
-
-			lens.setup(dir, tilt, focalLength);
 
 			Collection<Callable<Void>> tasks = new ArrayList<Callable<Void>>(parts);
 
@@ -157,9 +139,9 @@ public class PanoView {
 			}
 			long end = System.nanoTime();
 			System.out.println("Time " + (end - start) / 1000000L);
+			changed = false;
 		}
 		gr.drawImage(img, 0, 0, null);
-		changed = false;
 	}
 
 }

@@ -27,11 +27,12 @@ public class Test {
 		frame.setVisible(true);
 		long t = System.nanoTime();
 		for (int i = -1800; i < 1800; i++) {
-			panoView.setDir(i * Math.PI / 1800);
-			panoView.setTilt(-Math.sin(i * Math.PI / 1800));
-			panoView.setFocalLength(0.8 + 0.5 * Math.sin(i * Math.PI / 1800));
+			panoView.getLens().setup(
+					i * Math.PI / 1800,
+					-Math.sin(i * Math.PI / 1800),
+					0.8 + 0.5 * Math.sin(i * Math.PI / 1800));
 			Graphics2D g = canvas.startRender();
-			panoView.render(g);
+			panoView.render(g, true);
 			canvas.stopRender(g);
 		}
 		t = System.nanoTime() - t;
