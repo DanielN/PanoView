@@ -39,7 +39,7 @@ public class FixMath {
 	}
 
 	public static int div(int f, int g) {
-		return (int) ((f << FIXED_BITS) / g);
+		return (int) (((long) f << FIXED_BITS) / g);
 	}
 
 	/**
