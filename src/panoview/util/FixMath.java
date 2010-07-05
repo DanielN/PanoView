@@ -12,13 +12,14 @@ public class FixMath {
 
 	static {
 		for (int i = 0; i < atanTable.length; i++) {
-			atanTable[i] = (int) (ONE * Math.atan((double) i / ONE) / Math.PI);
-			sqrtTable[i] = (int) (ONE * Math.sqrt((double) i / ONE));
+			atanTable[i] = toFixed(Math.atan((double) i / ONE) / Math.PI);
+			sqrtTable[i] = toFixed(Math.sqrt((double) i / ONE));
 		}
 	}
 	
 	public static int toFixed(double d) {
-		return (int) (d * ONE);
+		long x = (long) (d * 2 * ONE);
+		return (int) ((x + 1 - (x >>> 63) >> 1));
 	}
 	
 	public static int toFixed(int i) {
@@ -93,10 +94,13 @@ public class FixMath {
 	}
 	
 	public static int sqrt(int f) {
-		if (f > ONE) {
-			return sqrt(f >> 4) << 2;
+		if (f <= ONE) {
+			return sqrtTable[f];
 		}
-		return sqrtTable[f];
+		if (f <= ONE * 4) {
+			return sqrtTable[f >> 2] << 1;
+		}
+		return sqrt(f >> 4) << 2;
 	}
 	
 	public static void main(String[] args) {
