@@ -67,6 +67,10 @@ public class PanoView {
 		return texture;
 	}
 	
+	public void repaint() {
+		changed = true;
+	}
+	
 	/**
 	 * Tell the renderer that the AWT surface to draw to has changed size.
 	 * The next call to {@link #render(Graphics)} will use the new size.

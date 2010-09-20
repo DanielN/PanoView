@@ -15,6 +15,7 @@ public class Texture {
 	private byte[] data;
 	private int width;
 	private int height;
+	private boolean smooth;
 	
 	/**
 	 * For test purposes only!
@@ -39,45 +40,72 @@ public class Texture {
 		height = image.getHeight();
 	}
 	
+	public void setSmooth(boolean smooth) {
+		this.smooth = smooth;
+	}
+	
+	public boolean isSmooth() {
+		return smooth;
+	}
+	
 	public int sample(int ss, int tt) {
-		int s = width * ss - FixMath.ONE/2;		// TODO this limits image size to 32768 pixels, use long?
-		int t = height * tt - FixMath.ONE/2;
-		
-		if (s < 0) s += FixMath.toFixed(width);
-		
-		int si = FixMath.toInt(s);
-		int ti = FixMath.toInt(t);
-		int sw = (s >> 8) & 0xFF;		// TODO This depends on FIXED_BITS being 16
-		int tw = (t >> 8) & 0xFF;
+		if (smooth) {
+			int s = width * ss - FixMath.ONE/2;		// TODO this limits image size to 32768 pixels, use long?
+			int t = height * tt - FixMath.ONE/2;
 
-		int i;
-		int r = 0;
-		int g = 0;
-		int b = 0;
-		try {
-			i = 3 * (Math.max(ti, 0) * width + si);
-			r += (256-sw) * (256-tw) * (data[i+2] & 0xFF);
-			g += (256-sw) * (256-tw) * (data[i+1] & 0xFF);
-			b += (256-sw) * (256-tw) * (data[i+0] & 0xFF);
-			i = 3 * (Math.max(ti, 0) * width + (si + 1) % width);
-			r += sw * (256-tw) * (data[i+2] & 0xFF);
-			g += sw * (256-tw) * (data[i+1] & 0xFF);
-			b += sw * (256-tw) * (data[i+0] & 0xFF);
-			i = 3 * (Math.min(ti + 1, height-1) * width + si);
-			r += (256-sw) * tw * (data[i+2] & 0xFF);
-			g += (256-sw) * tw * (data[i+1] & 0xFF);
-			b += (256-sw) * tw * (data[i+0] & 0xFF);
-			i = 3 * (Math.min(ti + 1, height-1) * width + (si + 1) % width);
-			r += sw * tw * (data[i+2] & 0xFF);
-			g += sw * tw * (data[i+1] & 0xFF);
-			b += sw * tw * (data[i+0] & 0xFF);
-			r >>= 16;
-			g >>= 16;
-			b >>= 16;
-		} catch (IndexOutOfBoundsException e) {
-			System.err.println("AIOOB: " + e.getMessage() + " ti: " + ti + " si:" + si + " limit: " + data.length + " tt:" + tt + " ss:" + ss);
+			if (s < 0) s += FixMath.toFixed(width);
+
+			int si = FixMath.toInt(s);
+			int ti = FixMath.toInt(t);
+			int sw = (s >> 8) & 0xFF;		// TODO This depends on FIXED_BITS being 16
+			int tw = (t >> 8) & 0xFF;
+
+			int i;
+			int r = 0;
+			int g = 0;
+			int b = 0;
+			try {
+				i = 3 * (Math.max(ti, 0) * width + si);
+				r += (256-sw) * (256-tw) * (data[i+2] & 0xFF);
+				g += (256-sw) * (256-tw) * (data[i+1] & 0xFF);
+				b += (256-sw) * (256-tw) * (data[i+0] & 0xFF);
+				i = 3 * (Math.max(ti, 0) * width + (si + 1) % width);
+				r += sw * (256-tw) * (data[i+2] & 0xFF);
+				g += sw * (256-tw) * (data[i+1] & 0xFF);
+				b += sw * (256-tw) * (data[i+0] & 0xFF);
+				i = 3 * (Math.min(ti + 1, height-1) * width + si);
+				r += (256-sw) * tw * (data[i+2] & 0xFF);
+				g += (256-sw) * tw * (data[i+1] & 0xFF);
+				b += (256-sw) * tw * (data[i+0] & 0xFF);
+				i = 3 * (Math.min(ti + 1, height-1) * width + (si + 1) % width);
+				r += sw * tw * (data[i+2] & 0xFF);
+				g += sw * tw * (data[i+1] & 0xFF);
+				b += sw * tw * (data[i+0] & 0xFF);
+				r >>= 16;
+				g >>= 16;
+				b >>= 16;
+			} catch (IndexOutOfBoundsException e) {
+				System.err.println("AIOOB: " + e.getMessage() + " ti: " + ti + " si:" + si + " limit: " + data.length + " tt:" + tt + " ss:" + ss);
+			}
+			return b | (g << 8) | (r << 16);
+		} else {
+			int si = FixMath.toInt(width * ss);
+			int ti = FixMath.toInt(height * tt);
+
+			int i;
+			int r = 0;
+			int g = 0;
+			int b = 0;
+			try {
+				i = 3 * (Math.min(ti, height-1) * width + si % width);
+				r = data[i+2] & 0xFF;
+				g = data[i+1] & 0xFF;
+				b = data[i+0] & 0xFF;
+			} catch (IndexOutOfBoundsException e) {
+				System.err.println("AIOOB: " + e.getMessage() + " ti: " + ti + " si:" + si + " limit: " + data.length + " tt:" + tt + " ss:" + ss);
+			}
+			return b | (g << 8) | (r << 16);			
 		}
-		return b | (g << 8) | (r << 16);
 	}
 
 }
